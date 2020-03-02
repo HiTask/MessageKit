@@ -111,19 +111,38 @@ internal extension MessagesViewController {
         // we only need to adjust for the part of the keyboard that covers (i.e. intersects) our collection view;
         // see https://developer.apple.com/videos/play/wwdc2017/242/ for more details
         let intersection = messagesCollectionView.frame.intersection(keyboardFrame)
-        
+
+		/// If messageInputBar is shown inside our custom VC (not as inputAccessoryView) we need to take it's height into account too. Also in this case we assume that messagesCollectionView is pinned to screen bottom and it's height will be encreased when keyboard will be shown.
+		let inputAccessoryViewHeight: CGFloat
+		let intersectionHeight: CGFloat
+		if messageInputBar.superview == view {
+			inputAccessoryViewHeight = messageInputBar.frame.height
+			intersectionHeight = keyboardFrame.height
+		} else {
+			inputAccessoryViewHeight = 0
+			intersectionHeight = intersection.height
+		}
+		
         if intersection.isNull || (messagesCollectionView.frame.maxY - intersection.maxY) > 0.001 {
             // The keyboard is hidden, is a hardware one, or is undocked and does not cover the bottom of the collection view.
             // Note: intersection.maxY may be less than messagesCollectionView.frame.maxY when dealing with undocked keyboards.
-            return max(0, additionalBottomInset - automaticallyAddedBottomInset)
+            return max(0, additionalBottomInset - automaticallyAddedBottomInset + inputAccessoryViewHeight)
         } else {
-            return max(0, intersection.height + additionalBottomInset - automaticallyAddedBottomInset)
+			return max(0, intersectionHeight + additionalBottomInset - automaticallyAddedBottomInset + inputAccessoryViewHeight)
         }
     }
 
     internal func requiredInitialScrollViewBottomInset() -> CGFloat {
-        guard let inputAccessoryView = inputAccessoryView else { return 0 }
-        return max(0, inputAccessoryView.frame.height + additionalBottomInset - automaticallyAddedBottomInset)
+		let inputAccessoryViewHeight: CGFloat
+		if messageInputBar.superview == view {
+			inputAccessoryViewHeight = messageInputBar.frame.height
+		} else if let inputAccessoryView = inputAccessoryView {
+			inputAccessoryViewHeight = inputAccessoryView.frame.height
+		} else {
+			return 0
+		}
+		let inset = max(0, inputAccessoryViewHeight + additionalBottomInset - automaticallyAddedBottomInset)
+        return inset
     }
 
     /// iOS 11's UIScrollView can automatically add safe area insets to its contentInset,
