@@ -81,7 +81,7 @@ UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
     internal var isMessagesControllerBeingDismissed: Bool = false
 
-    internal var messageCollectionViewBottomInset: CGFloat = 0 {
+    public var messageCollectionViewBottomInset: CGFloat = 0 {
         didSet {
             messagesCollectionView.contentInset.bottom = messageCollectionViewBottomInset
             messagesCollectionView.scrollIndicatorInsets.bottom = messageCollectionViewBottomInset
@@ -103,11 +103,6 @@ UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         isMessagesControllerBeingDismissed = false
-    }
-    
-    open override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        isMessagesControllerBeingDismissed = true
     }
     
     open override func viewDidDisappear(_ animated: Bool) {
