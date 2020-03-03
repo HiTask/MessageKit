@@ -123,7 +123,10 @@ internal extension MessagesViewController {
 			intersectionHeight = intersection.height
 		}
 		
-        if intersection.isNull || (messagesCollectionView.frame.maxY - intersection.maxY) > 0.001 {
+        if (intersection.isNull
+			|| (messagesCollectionView.frame.maxY - intersection.maxY > 0.001)
+			|| (messagesCollectionView.frame.maxY <= keyboardFrame.minY )
+				) {
             // The keyboard is hidden, is a hardware one, or is undocked and does not cover the bottom of the collection view.
             // Note: intersection.maxY may be less than messagesCollectionView.frame.maxY when dealing with undocked keyboards.
             return max(0, additionalBottomInset - automaticallyAddedBottomInset + inputAccessoryViewHeight)
